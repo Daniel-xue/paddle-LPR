@@ -85,8 +85,7 @@ def perform_ocr_on_images(ocr_reader, img):
 def run(
         source=ROOT / 'datasets/test/',  # file/dir/URL/glob/screen/0(webcam)
         nosave=False,  # do not save images/videos
-        project=ROOT / 'runs/pp4',  # save results to project/name
-        name='yolov9-c-c-640',  # save results to project/name
+        project=ROOT / 'runs/pp4',  # save results to project/
 ):
     source = str(source)
     save_img = not nosave and not source.endswith('.txt')  # save inference images
@@ -103,7 +102,7 @@ def run(
 
             # Save results (image with detections)
             if save_img:
-                cv2.imwrite(Path(project) / name / fn, img)
+                cv2.imwrite(Path(project) / fn, img)
     elif os.path.isfile(source):
         im0 = cv2.imread(source)
         img = perform_ocr_on_images(ocr_reader, im0)
@@ -111,14 +110,13 @@ def run(
         # Save results (image with detections)
         if save_img:
             print(source.split('/')[-1])
-            cv2.imwrite(Path(project) / name / source.split('/')[-1], img)
+            cv2.imwrite(Path(project) / source.split('/')[-1], img)
 
 def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--source', type=str, default=ROOT / 'datasets/test/', help='file/dir/URL/glob/screen/0(webcam)')
     parser.add_argument('--nosave', action='store_true', help='do not save images/videos')
-    parser.add_argument('--project', default=ROOT / 'runs/pp4', help='save results to project/name')
-    parser.add_argument('--name', default='yolov9-c-c-640', help='save results to project/name')
+    parser.add_argument('--project', default='runs/pp4', help='save results to project')
 
     opt = parser.parse_args()
     print_args(vars(opt))
