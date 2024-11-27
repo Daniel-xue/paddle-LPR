@@ -83,12 +83,11 @@ def perform_ocr_on_images(ocr_reader, img):
 
 @smart_inference_mode()
 def run(
-        source=ROOT / 'datasets/test/',  # file/dir/URL/glob/screen/0(webcam)
-        nosave=False,  # do not save images/videos
+        source=ROOT / 'datasets/test/',  # directory of iference data 
         project=ROOT / 'runs/pp4',  # save results to project/
 ):
     source = str(source)
-    save_img = not nosave and not source.endswith('.txt')  # save inference images
+    supported_formats = (".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif", ".webp", ".ppm", ".pgm", ".pbm")  # CV2 supported image file formats
 
     # Paddleocr目前支持的多语言语种可以通过修改lang参数进行切换
     # 例如`ch`, `en`, `fr`, `german`, `korean`, `japan`
@@ -96,26 +95,17 @@ def run(
 
     if os.path.isdir(source):
         for fn in os.listdir(source):
-            print(fn)
-            im0 = cv2.imread(Path(source) / fn)
-            img = perform_ocr_on_images(ocr_reader, im0)
-
-            # Save results (image with detections)
-            if save_img:
+            if fn.endswith(supported_formats):
+                print(fn)
+                im0 = cv2.imread(Path(source) / fn)
+                img = perform_ocr_on_images(ocr_reader, im0)
+    
+                # Save results (image with detections)
                 cv2.imwrite(Path(project) / fn, img)
-    elif os.path.isfile(source):
-        im0 = cv2.imread(source)
-        img = perform_ocr_on_images(ocr_reader, im0)
-
-        # Save results (image with detections)
-        if save_img:
-            print(source.split('/')[-1])
-            cv2.imwrite(Path(project) / source.split('/')[-1], img)
 
 def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--source', type=str, default=ROOT / 'datasets/test/', help='file/dir/URL/glob/screen/0(webcam)')
-    parser.add_argument('--nosave', action='store_true', help='do not save images/videos')
     parser.add_argument('--project', default='runs/pp4', help='save results to project')
 
     opt = parser.parse_args()
